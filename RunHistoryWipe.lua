@@ -8,20 +8,16 @@ RunHistoryWipe.Config = config
 RunHistoryWipe.AspectRecords = {}
 RunHistoryWipe.ConfirmButtonCount = 0
 
-OnControlPressed{ "Assist",
-    function( triggerArgs )
-        if ModUtil.PathGet("CurrentDeathAreaRoom") and IsEmpty( CurrentRun.Hero.FreezeInputKeys ) then
-            if RunHistoryWipe.ConfirmButtonCount < 4 and RunHistoryWipe.Config.Enabled then
-                RunHistoryWipe.ConfirmButtonCount = RunHistoryWipe.ConfirmButtonCount + 1
-            else
-                RunHistoryWipe.WipeRunHistory()
-                ModUtil.Hades.PrintOverhead("Run History Wiped!", 5)
-            end
+function RunHistoryWipe.PressWipeRunHistoryButton()
+    if ModUtil.PathGet("CurrentDeathAreaRoom") then
+        if RunHistoryWipe.ConfirmButtonCount < 4 and RunHistoryWipe.Config.Enabled then
+            RunHistoryWipe.ConfirmButtonCount = RunHistoryWipe.ConfirmButtonCount + 1
         else
-            ModUtil.Hades.PrintOverhead("Can't Wipe History Here...", 2)
+            RunHistoryWipe.WipeRunHistory()
+            ModUtil.Hades.PrintOverhead("Run History Wiped!", 5)
         end
     end
-}
+end
 
 function RunHistoryWipe.WipeRunHistory()
     GameState.ConsecutiveClears = 0
@@ -67,8 +63,6 @@ function RunHistoryWipe.WipeRunHistory()
     while TableLength(NewRunHistory) < 50 do
         table.insert(NewRunHistory, 1, {Cleared = true, RunDepthCache = 0})
     end
-
-    
 
     --NewRunHistory = ConcatTableValues(blank_runs, NewRunHistory)
     GameState.RunHistory = DeepCopyTable(NewRunHistory)
